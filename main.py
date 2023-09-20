@@ -1,12 +1,11 @@
 #%%
-import websocket,json
+import talib as ta 
 import pandas as pd
 import asyncio
 from binance import AsyncClient, BinanceSocketManager
 import logging
+from config import __secret, __key
 # from binance.client import 
-
-
 
 
 logging.basicConfig()
@@ -19,20 +18,19 @@ logging.basicConfig(level=logging.INFO,
         error:    40 
         critical: 50 
 '''
-_secret = "ODhMTfZi3K9AeBmxXdtKH3gQfNxIz8GjyarmZWWkwtprWecomQngIV9yqb5XUvfV"
-
-_key = "Y8xmWfwsQhHOCDFtunbhNyePj8SmeylNeASI9A1KWWONtzmzNCtL6CVCuvyV7x8K"
-
+_secret = __secret
+    
+_key = __key
+max_candle = 100
 
 async def main():
     
-    client = await  AsyncClient.create(api_key=_key,api_secret=_secret,testnet=True)
+    client = await  AsyncClient.create(api_key=_key,api_secret=_secret)
     
     bm = BinanceSocketManager(client)
-    show = bm.kline_socket('BTCUSDT')
-    # show_trade= bm.trade_socket('BTCUSDT')
+    show = bm.kline_socket('BTCUSDT',)
     
-    # enter the context manager
+    data = pd.DataFrame(columns=['price','rsi'])
     
     
     # recive a message
@@ -43,11 +41,30 @@ async def main():
             close = pd.DataFrame({'price':float(candle['k']['c'])}, index=[pd.to_datetime(candle['E'],unit='ms')])
             
             
-            print(close)
+            if candle['k']['x']:
+                data = pd.concat([data,close],axis=0)
+                print('nueva vela')
+                
+            if len(data) > max_candle:
+                data = data.iloc[-max_candle:]
+                
+                
+            if len(data['price']) >= 14:
+                data['rsi'] =  ta.RSI(data['price'],timeperiod=14)
+                
+                print(data.iloc[-1],)
+                print(len(data))
+            else:
+                print(close)
+                print(f"la data tiene : {len(data)}")
+         
+                
 
            
-    
-    # exit the context manager
+def calculate_rsi(data, period=14):
+    close_prices = data['price']
+    rsi = ta.RSI(close_prices, timeperiod=period)
+    return rsi
     
     
     
@@ -60,7 +77,6 @@ if __name__=='__main__':
     
 
 #%%
-    
     
 
 # interval = '1m'
