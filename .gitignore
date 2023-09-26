@@ -1,12 +1,15 @@
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
 # C extensions
 *.so
+# Config
 config.py
-
+__
+Untitled-1.ipynb
+.gitignore
+# /config.py
 # Distribution / packaging
 .Python
 build/
