@@ -1,7 +1,6 @@
 import talib  as ta
 
 
-
 class indicators:
 
     def __init__(self, data):
