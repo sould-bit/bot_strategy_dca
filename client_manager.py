@@ -1,11 +1,10 @@
-from binance.client import Client
-from config import secreta
-from config import keya 
+from binance.spot import Spot
+from config import secret
+from config import key
 from time import sleep
-import asyncio
+import time
 import logging
-key = keya
-secret = secreta
+
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 '''
@@ -20,98 +19,105 @@ logging.basicConfig(level=logging.INFO,
 class client_:
     
 
-    async def connect_Client(self):
+    def __init__(self):
             '''
             inicializa y conecta  el Cliente
             '''
             while True:
                 try :
                 # crea una instancia del Cliente 
-                    self.brok =Client(api_key=key,api_secret=secret)
+                    self.brok =Spot(api_key=key,api_secret=secret)
                     logging.info(f"iniciando coneccion con la Api ")
-                    return self.brok
+                    break
+
                 
                 except Exception as e:
                     logging.warning(f"no se ha podido establecer la coneccion con binance Appi -> {e}")
                     sleep(5)
-                    
-    async def order_buy(self,size:int, max_retries = 3):
+                
+    def order_buy(self,size:int, max_retries = 3):
             '''
             args :
             size (int) : cantidad en usd comprar
             '''
-            await self.connect_Client()
+            
             retries = 0 
+            # nesesario para la test  es usar quantity
+            # price = float(self.brok.ticker_price('BTCBUSD')['price'])
+            
             while retries < max_retries:
                 try:
-                    params = {'symbol': 'BTCBUSD',
+                    params = {'symbol':'BTCUSDT',
                               'side':'BUY',
-                              'type': 'MARKET',
-                              # usamos quoterOrderQty , para  tomar valores en usd
-                              'quoterOrderQty': size # compramos 10 dolares 
+                              'type':'MARKET',
+                              'quoteOrderQty': size
                               }                 
-                    self.brok.create_test_order(
-                    
-                    )
+                    self.brok.new_order(**params)
                     print(f'\n ** \ncompra\n ** \n')
                     break # 'exito'  salir del bucle 
                 
                 except Exception as e:
                     logging.error(f'error al crear la orden de compra: {e}')
-                    await asyncio.sleep(2)
+                    
                     retries += 1
+                    sleep(1)
                     
             if retries == max_retries:
-                logging.info(f'el numero maximo de intentos ha sido superdo, debido al error: {e}') 
+                logging.info(f'el numero maximo de intentos ha sido superdo, debido al error') 
                 
                 
-    async def secuity_order_buy(self,size:int, max_retries = 3):
+    def secuity_order_buy(self,size:int, max_retries = 3):
             '''
             args: 
             size (int): tamaño de recompra en usd 
             '''
-            await self.connect_Client()
+            
             retries = 0
+            # nesesario para la test  es usar quantity
+            # price = float(self.brok.get_symbol_ticker()[11][price])
             while retries < max_retries:
                 try:
-                    params = {'symbol': 'BTCBUSD',
+                    params = {'symbol': 'BTCUSDT',
                               'side': 'BUY',
                               'type': 'MARKET',
-                              'quoterOrderQty': size # compramos el valor de 15 dolares 
+                              'quoteOrderQty': size 
                               }
                     
-                    self.brok.create_test_order(**params)
+                    self.brok.new_order(**params)
                     print(f'\n ** \nRecompra\n ** \n')
                     break # 'exito' salir del bucle 
                     
                 except Exception as e:
                     logging.error(f'error al crear la orden de compra: {e}')
-                    await asyncio.sleep(2)
+                    sleep(1)
+                    
                     retries += 1
                     
             if retries == max_retries:
                 logging.info(f'el numero maximo de intentos ha sido superdo, debido al error: {e}')     
         
         
-    async def order_sell(self,max_retries = 3):
-            await  self.connect_Client()
+    def order_sell(self,max_retries = 3):
+            
             retries = 0
             while retries < max_retries:
                 try:
-                    # nesesito mostra el balance , de los assets   para cuando ocurra la venta se venda todo !
-                    valor_usdt = None
-                    params = {'symbol': 'BTCBUSD',
+                    # AHI  QUE VERIFICAR , SI BALANCE_BTC MUESTRA EL BALANCE EN SI 
+                    balance_btc = [x for x in self.brok.account()['balances'] if x['asset'] == 'BTC']
+                    btc_to_sell = float(balance_btc[0]['free'])
+                    
+                    params = {'symbol': 'BTCUSDT',
                               'side': 'SELL',
                               'type': 'MARKET',
-                              'quantity': valor_usdt}
+                              'quantity': btc_to_sell}
                     
-                    self.brok.create_test_order(**params)
+                    self.brok.new_order(**params)
                     print(f'\n ** \nventa\n ** \n')
                     break # exito, salir del bucle 
                 
                 except Exception as e:
                     logging.error(f'error al crear la orden de venta : {e}')
-                    await asyncio.sleep(2)
+                    
                     retries += 1
                 
                          
@@ -119,24 +125,27 @@ class client_:
                 logging.info(f'el numero maximo de intentos ha sido superdo, debido al error: {e}') 
 
     
-    async def calcular_ganancias(self,precio_de_entrada, precio_actual):
+    def calcular_ganancias(self,precio_de_entrada, precio_actual):
         '''
         args:
-        precio_de_entrada float():  el precio de entrada 
+        precio_de_entrada (float):  el precio de entrada 
+        
+        precio actual (float): el precio actual 
         
         return :  ganancias o perdidas actuales 
         '''
         if precio_de_entrada != None:
-            await self.connect_Client()
-            balance = self.brok.get_asset_balance('BTC')['free']
-            earning = (precio_actual - precio_de_entrada) * balance
+            balance_btc = [x for x in self.brok.account()['balances'] if x['asset'] == 'BTC']
+            btc_to_sell = float(balance_btc[0]['free'])
+            
+            earning = (precio_actual - precio_de_entrada) * btc_to_sell
             return earning
         else :
             return None 
         
         
         
-    async def calcule_percentage(self,earning,entry_price):
+    def calcule_percentage(self,earning,entry_price):
         '''
         args: 
         earning float():  requiere el calculo de las ganancias
@@ -146,10 +155,13 @@ class client_:
         '''
         if earning != None:
         
-            await self.connect_Client()
-            balance = self.brok.get_asset_balance('BTC')['free']
-            porcentage_ganancia = (earning / (entry_price * balance)) * 100 
+            balance_btc = [x for x in self.brok.account()['balances'] if x['asset'] == 'BTC']
+            btc_to_sell = float(balance_btc[0]['free'])
+            porcentage_ganancia = (earning / (entry_price * btc_to_sell)) * 100 
             
             return porcentage_ganancia
         else: 
             return None
+
+
+

@@ -2,7 +2,11 @@ import talib  as ta
 
 
 class indicators:
+    '''
+    args: 
+    data :  DATA WITH A VALUES  BY TO CALCULE 
 
+    '''
     def __init__(self, data):
         
         
