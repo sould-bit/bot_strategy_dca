@@ -168,7 +168,7 @@ def on_message(ws, message):
     
     
     try:
-        object = client_()
+        
         global data # mantenemos las varoiables globales, para que  la funcion on_message no la omita 
         global kline# mantenemos las varoiables globales, para que  la funcion on_message no la omita 
         '''
@@ -205,13 +205,14 @@ def on_message(ws, message):
             realizamos los calculos del rsi nesesarios 
         '''
         # Calculamos el [RSI] 
-        if len(data) > 90 :
+        if len(data) > 3 :
             data['RSI'] = indicators(data['PRICE']).rsi()
             
             # sujeto a  prueba imprimir la data completa 
-            print(data)
+            #print(data)
             # realizamos el informe 
-            logging.info(f"{data['RSI'].iloc[-1]}")
+            logging.info(f"\n{data.iloc[-1]}")
+            logging.info(f"La data tiene: {len(data)}\n")
             
         # LOGICA COMERCIAL
             process = socket_manager_date( size=10,size_segurity=15,umbral_activacion=30,ordenes_seguridad=16,riesgo_segurity=-3,target=2.1)
@@ -221,8 +222,8 @@ def on_message(ws, message):
             
             
         else:
-            logging.info(kline['PRICE'])
-            logging.info(f"La data tiene: {len(data)}")
+            logging.info(f"{kline['PRICE'][-1]}")
+            logging.info(f"La data tiene: {len(data)}\n")
         
     except Exception as e :
         logging.error(f"error en la ejecucion {e}")
