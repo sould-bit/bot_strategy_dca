@@ -5,30 +5,14 @@ Este es un proyecto de Trading Bot escrito en Python que utiliza la API de Binan
 ## Descripción
 Este proyecto está diseñado para monitorear el precio de un par de trading en Binance y realizar operaciones de compra y venta basadas en las lecturas del RSI. El RSI es un indicador técnico utilizado comúnmente en análisis técnico para identificar condiciones de sobrecompra y sobreventa en un activo.
 
-## Características
-Conexión asincrónica a la API de Binance.
-Recepción de datos de velas (candles) en tiempo real.
-Cálculo del RSI para tomar decisiones comerciales.
-Lógica de compra y venta automatizada basada en el RSI.
-Registro de eventos y errores en un archivo de registro.
-Requisitos
-Asegúrate de tener los siguientes requisitos instalados en tu entorno de desarrollo:
+##  librerias y Características 
 
-Python 3.7 o superior.
-Bibliotecas Python: pandas, binance, time, entre otras (verifica los requisitos específicos en el código).
-Instalación
-Clona este repositorio:
-bash
-Copy code
-git clone https://github.com/tu_usuario/tu_proyecto.git
-cd tu_proyecto
-Instala las dependencias:
-bash
-Copy code
-pip install -r requirements.txt
-Configura las credenciales de tu cuenta de Binance en el archivo config.py.
-Uso
-Para ejecutar el Trading Bot, utiliza el siguiente comando:
+we used websocket for python
+
+'pip install binance-connector' 
+'pip install pandas' 
+'pip install TA-Lib'
+
 
 
 ## Copy code

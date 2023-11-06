@@ -187,7 +187,7 @@ def on_message(ws, message):
         # verificamos la klnie de cierre temporal
         if json_message['k']['x']:
             data = pd.concat([data,kline])
-            print(data)
+            print(data.tail(3))
             
             
         # controlar el limite
@@ -205,7 +205,7 @@ def on_message(ws, message):
             realizamos los calculos del rsi nesesarios 
         '''
         # Calculamos el [RSI] 
-        if len(data) > 3 :
+        if len(data) >  90:
             data['RSI'] = indicators(data['PRICE']).rsi()
             
             # sujeto a  prueba imprimir la data completa 
@@ -222,7 +222,7 @@ def on_message(ws, message):
             
             
         else:
-            logging.info(f"{kline['PRICE'][-1]}")
+            logging.info(f"{kline['PRICE'].iloc[-1]}")
             logging.info(f"La data tiene: {len(data)}\n")
         
     except Exception as e :
