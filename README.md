@@ -10,9 +10,22 @@ Este proyecto está diseñado para monitorear el precio de un par de trading en 
 we used websocket for python
 
 'pip install binance-connector' 
+
 'pip install pandas' 
+
 'pip install TA-Lib'
 
+
+si tienes problemas al instalar talib intenta lo siguiente  for linux
+
+ 'wget https://sourceforge.net/projects/ta-lib/files/ta-lib/0.4.10/ta-lib-0.4.10-src.tar.gz'
+
+
+$ tar -xzf ta-lib-0.4.0-src.tar.gz
+$ cd ta-lib/
+$ ./configure --prefix=/usr
+$ make
+$ sudo make install
 
 
 ## Copy code

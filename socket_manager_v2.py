@@ -160,12 +160,7 @@ class socket_manager_date:
             
             
 def on_message(ws, message):
-    
-    
-    
     max_candle = 100
-    
-    
     
     try:
         
